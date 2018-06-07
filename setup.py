@@ -54,12 +54,12 @@ test_requirements = [
 ]
 
 setup(
-    name='pyclean',
+    name='py_clean',
     version='0.1.0',
     description="python clean architecture toolkit",
     long_description=readme + '\n\n' + history,
-    author="Carlos Ramirez",
-    author_email='carlos.ramirez@bahnlink.com',
+    author="bahnlink",
+    author_email='admin@bahnlink.com',
     url='https://github.com/bahnlink/pyclean',
     packages=find_packages(include=['clean.*', 'clean.exceptions']),
     include_package_data=True,
@@ -72,6 +72,7 @@ setup(
         'Natural Language :: English',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
     ],
     test_suite='tests',
     tests_require=test_requirements,

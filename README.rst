@@ -18,20 +18,3 @@ Python Clean Architecture Toolkit
 
 This ptoolkit contains classes that may be helpful for implementing clean principles to your project. It may eliminate the boilerplate code and always will be open for options.
 
-
-* Free software: MIT license
-* Documentation: https://python-clean-architecture-toolkit.readthedocs.io.
-
-
-Features
---------
-
-* TODO
-
-Credits
--------
-
-This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
-
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
