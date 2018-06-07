@@ -3,7 +3,8 @@
 
 """The setup script."""
 
-from setuptools import setup, find_packages
+from setuptools import find_packages
+from distutils.core import setup
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -55,13 +56,13 @@ test_requirements = [
 
 setup(
     name='py_clean',
-    version='0.1.0',
+    version='0.1.3',
     description="python clean architecture toolkit",
     long_description=readme + '\n\n' + history,
     author="bahnlink",
     author_email='admin@bahnlink.com',
     url='https://github.com/bahnlink/pyclean',
-    packages=find_packages(include=['clean.*', 'clean.exceptions']),
+    packages=find_packages(include=['clean', 'clean.*']),
     include_package_data=True,
     install_requires=requirements,
     zip_safe=False,
