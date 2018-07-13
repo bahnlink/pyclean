@@ -56,7 +56,7 @@ test_requirements = [
 
 setup(
     name='py_clean',
-    version='0.1.3',
+    version='0.1.4',
     description="python clean architecture toolkit",
     long_description=readme + '\n\n' + history,
     author="bahnlink",
