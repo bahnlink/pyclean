@@ -2,10 +2,12 @@ from clean.exceptions import AuthException
 from clean.auth.abs import DecodeToken
 
 
-def create_decorator(v_class, token_finder):
+def create_decorator(v_class, token_finder, debug=False):
     def protect(scopes_check=None):
         def wrap(f):
             def wrapped_f(*args, **kwargs):
+                if debug:
+                    return f(*args, **kwargs)
                 context = token_finder()
                 dt = v_class(raw_token=context, scopes_check=scopes_check)
                 try:
