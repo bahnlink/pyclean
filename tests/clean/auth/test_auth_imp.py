@@ -5,7 +5,7 @@ from clean.auth.abs import DecodeToken
 from clean.exceptions import AuthException
 
 perms = {
-    'user_type': {
+    'user': {
         'req': 'user'
     },
     'rule': {
@@ -52,14 +52,14 @@ def test_permissions_raises():
     with pytest.raises(AuthException) as e:
         vt = VerifyTokenAuth(raw_token='',
                              kwargs_perm={
-                                 'user_type': {'req': 'user'},
+                                 'user': {'req': 'user'},
                                  'rule': {
                                      'path': 'scopes.articles.actions',
                                      'op': 'in',
                                      'value': 'w'
                                  }
                              })
-        print("is valid:", vt.is_valid())
+        vt.is_valid()
 
     assert str(e.value) == 'user has not permission'
 

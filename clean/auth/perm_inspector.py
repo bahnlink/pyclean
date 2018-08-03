@@ -3,7 +3,6 @@ from typing import Dict, Any
 
 def get_value_from_dict(src: Dict, path: str, delimiter='.'):
     paths = path.split(delimiter)
-    print(paths, src)
     current = src
     for p in paths:
         if p in current:
@@ -40,8 +39,8 @@ class PermissionInspector:
         MATCHER_EVALUATOR = matcher_evaluator
         OP_SET = OP_SET
 
-    def __init__(self, user_type: Dict = None, rule: Dict = None, allow_super: bool = False):
-        self.user_type = {} if user_type is None else user_type
+    def __init__(self, user: Dict = None, rule: Dict = None, allow_super: bool = False):
+        self.user_type = {} if user is None else user
         self.rule = {} if rule is None else rule
         self.allow_super = allow_super
 

@@ -29,7 +29,7 @@ def test_create_decorator():
     protect = db.create()
     result = dict()
 
-    @protect(user_type={'req': 'user'})
+    @protect(user={'req': 'user'})
     def my_endpoint(user_token, *args, **kwargs):
         result['user_token'] = user_token
         return True
@@ -96,7 +96,7 @@ def test_auth_exception_with_invalid_scopes():
     protect = db.create()
     result = dict()
 
-    @protect(user_type={'req': 'user'}, rule={'path': 'scopes.bar', 'op': 'eq1', 'value': 'foo'})
+    @protect(user={'req': 'user'}, rule={'path': 'scopes.bar', 'op': 'eq1', 'value': 'foo'})
     def my_endpoint(user_token, *args, **kwargs):
         result['user_token'] = user_token
         return True
@@ -114,7 +114,7 @@ def test_auth_with_valid_scopes():
     protect = db.create()
     result = dict()
 
-    @protect(user_type={'req': 'user'}, rule={'path': 'scopes.bar', 'op': 'eq', 'value': 'foo'})
+    @protect(user={'req': 'user'}, rule={'path': 'scopes.bar', 'op': 'eq', 'value': 'foo'})
     def my_endpoint(user_token, *args, **kwargs):
         result['user_token'] = user_token
         return True

@@ -7,13 +7,13 @@ import logging
 
 
 def create_decorator(v_class, token_finder, debug=False, logger=logging):
-    def protect(user_type: Dict = None, rule: Dict = None, allow_super: bool = False):
+    def protect(user: Dict = None, rule: Dict = None, allow_super: bool = False):
         def wrap(f):
             def wrapped_f(*args, **kwargs):
                 if debug:
                     return f(*args, **kwargs)
                 context = token_finder()
-                kwargs_perm = dict(user_type=user_type, rule=rule, allow_super=allow_super)
+                kwargs_perm = dict(user=user, rule=rule, allow_super=allow_super)
                 dt = v_class(raw_token=context, kwargs_perm=kwargs_perm)
                 try:
                     dt.is_valid()
