@@ -15,7 +15,10 @@ class VerifyTokenAuth(DecodeToken):
         return raw
 
     def verify(self, token: str):
-        return UserToken('crl', 'admin@admin.com', avatar='', metadata={'bar': 'foo'})
+        return UserToken('crl', 'admin@admin.com',
+                         photo_url='',
+                         scopes={'bar': 'foo'},
+                         app_meta={'bar': 'foo'}).to_dict()
 
 
 def test_create_decorator():
@@ -26,7 +29,7 @@ def test_create_decorator():
     protect = db.create()
     result = dict()
 
-    @protect()
+    @protect(user_type={'req': 'user'})
     def my_endpoint(user_token, *args, **kwargs):
         result['user_token'] = user_token
         return True
@@ -36,7 +39,7 @@ def test_create_decorator():
 
     assert res is True
     assert usr_token is not None
-    assert usr_token.username == 'crl'
+    assert usr_token['username'] == 'crl'
 
 
 def test_auth_exception():
@@ -93,7 +96,7 @@ def test_auth_exception_with_invalid_scopes():
     protect = db.create()
     result = dict()
 
-    @protect(scopes_check={'foo': 'bar'})
+    @protect(user_type={'req': 'user'}, rule={'path': 'scopes.bar', 'op': 'eq1', 'value': 'foo'})
     def my_endpoint(user_token, *args, **kwargs):
         result['user_token'] = user_token
         return True
@@ -111,7 +114,7 @@ def test_auth_with_valid_scopes():
     protect = db.create()
     result = dict()
 
-    @protect(scopes_check={'bar': 'foo'})
+    @protect(user_type={'req': 'user'}, rule={'path': 'scopes.bar', 'op': 'eq', 'value': 'foo'})
     def my_endpoint(user_token, *args, **kwargs):
         result['user_token'] = user_token
         return True
@@ -121,4 +124,4 @@ def test_auth_with_valid_scopes():
 
     assert res is True
     assert usr_token is not None
-    assert usr_token.username == 'crl'
+    assert usr_token['username'] == 'crl'

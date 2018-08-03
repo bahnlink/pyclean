@@ -4,46 +4,68 @@ from clean.entities.token import UserToken
 from clean.auth.abs import DecodeToken
 from clean.exceptions import AuthException
 
+perms = {
+    'user_type': {
+        'req': 'user'
+    },
+    'rule': {
+        'path': 'scopes.bar',
+        'op': 'eq',
+        'value': 'foo'
+    }
+}
+
 
 class VerifyTokenAuth(DecodeToken):
 
     def verify(self, token: str):
-        return UserToken('crl', 'admin@admin.com', avatar='', metadata={'foo': 'bar'})
+        return UserToken('crl', 'admin@admin.com',
+                         photo_url='',
+                         app_meta={'bar': 'foo'},
+                         scopes={'bar': 'foo'}).to_dict()
 
 
 def test_decode_token():
-    vt = VerifyTokenAuth(raw_token='token_data')
+    vt = VerifyTokenAuth(raw_token='token_data', kwargs_perm=perms)
     ut = vt.is_valid()
-    assert ut.username == 'crl'
-    assert ut.email == 'admin@admin.com'
-    assert ut.avatar == ''
+    assert ut['username'] == 'crl'
+    assert ut['email'] == 'admin@admin.com'
+    assert ut['photo_url'] == ''
 
 
 def test_raise_token_is_null():
     with pytest.raises(AuthException) as e:
-        vt = VerifyTokenAuth(raw_token=None)
+        vt = VerifyTokenAuth(raw_token=None, kwargs_perm=perms)
         vt.is_valid()
 
     assert str(e.value) == 'token not found'
 
 
-def test_scopes():
-    vt = VerifyTokenAuth(raw_token='', scopes_check={'foo': 'bar'})
+def test_permissions():
+    vt = VerifyTokenAuth(raw_token='', kwargs_perm=perms)
     ut = vt.is_valid()
 
-    assert ut.username == 'crl'
+    assert ut['username'] == 'crl'
 
 
-def test_scopes_raises():
+def test_permissions_raises():
     with pytest.raises(AuthException) as e:
-        vt = VerifyTokenAuth(raw_token='', scopes_check={'bar': 'foo'})
-        vt.is_valid()
+        vt = VerifyTokenAuth(raw_token='',
+                             kwargs_perm={
+                                 'user_type': {'req': 'user'},
+                                 'rule': {
+                                     'path': 'scopes.articles.actions',
+                                     'op': 'in',
+                                     'value': 'w'
+                                 }
+                             })
+        print("is valid:", vt.is_valid())
 
-    assert str(e.value) == 'user has not permission scopes'
+    assert str(e.value) == 'user has not permission'
 
 
 def test_create_resp():
-    vt = VerifyTokenAuth(raw_token='', scopes_check={'foo': 'bar'})
+    vt = VerifyTokenAuth(raw_token='')
 
     res = vt.create_resp_err('error')
 
@@ -54,9 +76,11 @@ def test_create_resp_func():
     def custom_error_resp(err: str):
         return err
 
-    vt = VerifyTokenAuth(raw_token='',
-                         scopes_check={'foo': 'bar'},
-                         resp_err_fuc=custom_error_resp)
+    class V(VerifyTokenAuth):
+        class Meta:
+            ERROR_FUNC = custom_error_resp
+
+    vt = V(raw_token='')
 
     res = vt.create_resp_err('error')
 

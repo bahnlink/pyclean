@@ -12,4 +12,4 @@ def test_factory_abs_has_create_method_as_abstract():
     verify_sig = str(signature(DecodeToken.verify))
 
     assert ab == frozenset(['verify'])
-    assert verify_sig == '(self, token:str)'
+    assert verify_sig == '(self, token:str) -> Dict'

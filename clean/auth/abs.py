@@ -1,24 +1,30 @@
 import abc
+from typing import Dict
 
+from clean.auth.perm_inspector import PermissionInspector
 from clean.entities.token import UserToken
 from clean.exceptions import AuthException
 
 
 class DecodeToken(metaclass=abc.ABCMeta):
 
-    def __init__(self, raw_token: str, scopes_check=None, resp_err_fuc=None):
-        self.scopes_check = scopes_check if scopes_check is not None else {}
+    class Meta:
+        PERM_VERIFIER_CLASS = PermissionInspector
+        ERROR_FUNC = None
+
+    def __init__(self, raw_token: str,
+                 kwargs_perm: Dict=None):
         self.raw_token = raw_token
-        self.user_token = UserToken(username='', email='', avatar='')
-        self.resp_err_func = resp_err_fuc
+        self.user_token = UserToken(username='', email='', photo_url='').to_dict()
+        self.kwargs_perm = {} if kwargs_perm is None else kwargs_perm
 
     @abc.abstractmethod
-    def verify(self, token: str):
+    def verify(self, token: str) -> Dict:
         """"""
 
-    def is_valid(self) -> UserToken:
+    def is_valid(self) -> Dict:
         self.decode()
-        self.verify_scopes()
+        self.verify_permissions()
         return self.user_token
 
     def decode(self):
@@ -27,13 +33,13 @@ class DecodeToken(metaclass=abc.ABCMeta):
             raise AuthException('token not found')
         self.user_token = self.verify(token=token)
 
-    def verify_scopes(self):
-        for key, value in self.scopes_check.items():
-            if key not in self.user_token.metadata or self.user_token.metadata[key] != value:
-                raise AuthException('user has not permission scopes')
+    def verify_permissions(self):
+        perm = self.Meta.PERM_VERIFIER_CLASS(**self.kwargs_perm)
+        if perm.verify(self.user_token) is False:
+            raise AuthException('user has not permission')
 
     def create_resp_err(self, error_msg: str):
-        if callable(self.resp_err_func):
-            return self.resp_err_func(error_msg)
+        if callable(self.Meta.ERROR_FUNC):
+            return self.Meta.ERROR_FUNC(error_msg)
         else:
             return {'error': error_msg}
